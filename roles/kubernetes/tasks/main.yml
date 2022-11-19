@@ -1,0 +1,57 @@
+---
+# tasks file for kubernetes
+
+- name: Delete minikube binary file if exist
+  file:
+    path: /tmp/minikube
+    state: absent
+
+- name: Delete Kubectl binary file if exist
+  file:
+    path: /tmp/kubectl
+    state: absent
+    
+- name: Download minikube binary
+  get_url:
+    url: "https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64"
+    dest: "/tmp/minikube"
+    mode: 0600
+
+- name: Install minikube
+  copy:
+    src: /tmp/minikube
+    dest: /usr/local/bin/minikube
+    mode: 0755
+
+- name: Check Kubectl Last Version
+  uri:
+    url: "https://dl.k8s.io/release/stable.txt"
+    method: GET
+    return_content: yes
+  register: kubectl_version
+  failed_when : "'v' not in kubectl_version.content"
+
+- debug:
+    var: kubectl_version.content
+    
+- name: Download kubectl Binary
+  get_url:
+    url: "https://dl.k8s.io/release/{{kubectl_version.content}}/bin/linux/amd64/kubectl"
+    dest: "/tmp/kubectl"
+    mode: 0600
+
+- name: Install kubectl
+  copy:
+    src: /tmp/kubectl
+    dest: /usr/local/bin/kubectl
+    mode: 0755
+
+- name: Clean up kubectl binary file in tmp dir
+  file:
+    path: /tmp/kubectl
+    state: absent
+
+- name: Clean up minikube binary file in tmp dir
+  file:
+    path: /tmp/minikube
+    state: absent
