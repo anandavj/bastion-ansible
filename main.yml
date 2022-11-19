@@ -1,0 +1,5 @@
+- hosts: bastion
+  roles:
+    - role: "basic_package"
+    - role: "docker"
+    - role: "kubernetes"

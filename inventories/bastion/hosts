@@ -1,0 +1,6 @@
+[bastion]
+server1 ansible_host=localhost 
+
+[bastion:vars]
+ansible_user=root
+ansible_ssh_private_key_file=/root/ananda/bastion-ansible/bastion_rsa
